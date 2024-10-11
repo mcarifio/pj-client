@@ -17,7 +17,7 @@ subtree.add() (
     # git remote set-url --delete "${_remote}" "${_url}"
     # [[ -d "${_top}/${_location}" ]] && mv -v "${_top}/${_location}" /tmp
     git subtree add --prefix="${_location}" ${_remote} ${_branch} --squash || true
-    grep -s -E "^${_location}" ${_top}/.gitignore || printf "\n\n# $0 added\n${_location}/\n" >> ${_top}/.gitignore
+    # grep -s -E "^${_location}" ${_top}/.gitignore || printf "\n\n# $0 added\n${_location}/\n" >> ${_top}/.gitignore
 )
 
 subtree.pull() (
@@ -36,6 +36,8 @@ subtrees() (
         subtree.pull $(basename "${_url}" .git) "${BASH_REMATCH[3]}" ${_prefix}
     done
     grep -s -E "^${_prefix}" ${_top}/.gitignore || printf "\n\n# $0 added\n${_prefix}/\n" >> ${_top}/.gitignore
+    git add --force ${_top}/.gitignore
+    git commit -m "$0 ignore ${_prefix}" ${_top}/.gitignore
 )
 
 main() (
@@ -47,12 +49,9 @@ main() (
     if type -p direnv &> /dev/null; then
         cp -v ${_prefix}/pj/bin/.envrc "${_top}/"
         direnv allow || true
-        grep -s -E "^\.envrc" ${_top}/.gitignore || printf "# $0 added\n.envrc\n" >> ${_top}/.gitignore
+        git add ${_top}/.envrc
     fi
-    
-    grep -s -E "^\.gitignore" ${_top}/.gitignore || printf "# $0 added\n.gitignore\n" >> ${_top}/.gitignore
-    git add --force ${_top}/{.gitignore,.envrc}
-    git commit -m "$0 modified ${_top}/.gitignore" ${_top}/{.gitignore,.envrc}
+    find ${_top} -name gitignore.io.sh -type f -executable >&2 && echo "## next"
 )
 
 main "${_subtree}" gh:mcarifio/pj.git
