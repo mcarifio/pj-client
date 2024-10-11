@@ -1,0 +1,19 @@
+import? 'shared.just'
+
+@_default:
+        just --justfile {{justfile()}} list
+
+# install prerequisite packages by linux distro depending on the package manager (dnf, apt and so forth)
+install:
+    #!/usr/bin/env bash
+    if type -p dnf &> /dev/null; then
+        sudo dnf upgrade -y
+        sudo dnf install -y tree gpp gmake just
+    elif type -p apt &> /dev/null; then
+        sudo apt upgrade -y
+        sudo apt install tree gpp gmake just
+    elif type -p snap &> /dev/null; then
+        :
+    elif type -p flatpak &> /dev/null; then
+        :
+    fi

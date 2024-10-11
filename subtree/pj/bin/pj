@@ -1,0 +1,17 @@
+#!/usr/bin/env -S just --justfile
+
+import? 'shared.just'
+
+@_default:
+    just --justfile {{justfile()}} list
+
+# pj start <action> ... // do a 'start' subaction <action>
+start *args: (_forward "start" args)
+
+# pj example <action> ... // show how to do some things in just
+example *args: (_forward "example" args)
+
+# https://docs.gitignore.io/
+# pj gitignore feature,feature...
+gitignore *args:
+    curl -sL https://www.toptal.com/developers/gitignore/api/${args}
